@@ -5,7 +5,7 @@ This program is a Python Script that accepts a MAC address as command line argum
 HOW TO USE:
 1. Get an apiKey from macaddress.io by registering for an account on the website
 2. Replace "YOUR_API_KEY" in /config.py with the apiKey
-3. Run /GetNICVendor.py followed by a MAC address on the command line
+3. Run GetNICVendor.py followed by a MAC address on the command line
 
 Security Concerns:
 My API key and MAC address are publically exposed in this repository and could be stored in server logs when using GET. The API key could be used to perform a DOS attack on the macaddress.io servers. Hopefully, the server has implemented some kind of spike arrest to prevent this. A MAC address is potentially sensitive as well.
