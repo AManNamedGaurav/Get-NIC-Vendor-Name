@@ -2,6 +2,7 @@
 import requests
 import sys
 import re
+import config
 
 #calls mac address api to get vendor name and return it
 def retrieveNICVendor(macAddress):
@@ -10,7 +11,7 @@ def retrieveNICVendor(macAddress):
 
     ##input parameters for get request:
     #My API Key for macaddress api. probably should hide this somehow
-    APIKEY = "at_z7i9dbzdYrwBMSWoXpgtVz6cSdHmR"
+    APIKEY = config.API_KEY
 
     #Output format. To meet requirements, initializing as 'vendor'.
     #Although, can change to 'json' and parse more information from API call
