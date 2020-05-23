@@ -1,2 +1,4 @@
 # Get NIC Vendor Name
- Gets the name of the vendor of a Network Interface Controller based on MAC address
+ Accepts a MAC address as command line argument and returns the name of the vendor of the Network Interface Controller associated with the MAC address.
+
+Runs on python
