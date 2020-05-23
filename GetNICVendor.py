@@ -8,7 +8,7 @@ if (len(sys.argv) == 2):
     API_ENDPOINT = 'https://api.macaddress.io/v1'
 
     ##input parameters for get request:
-    #My API Key for mac macaddress
+    #My API Key for macaddress api
     APIKEY = "at_z7i9dbzdYrwBMSWoXpgtVz6cSdHmR"
     #MAC address to search. Mac address is provided my CMD arg
     MACADDRESS = sys.argv[1]
