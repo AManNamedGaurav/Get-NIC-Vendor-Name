@@ -12,38 +12,66 @@ def retrieveNICVendor(macAddress, apiKey):
     OUTPUTFORMAT = "vendor"
 
     ##input parameters for get request:
-    #API key from config.py file
     PARAMS = {
         'apiKey': apiKey,
         'search': macAddress,
         'output': OUTPUTFORMAT
     }
+    #number of seconds to wait for response from web service
+    TIMEOUT = 1
+
     try:
-        response = requests.get(API_ENDPOINT, params=PARAMS)
+        #try to get a response from GET request
+        print("Please wait. Waiting for response")
+        #returns a requests.response object
+        response = requests.get(API_ENDPOINT, params=PARAMS, timeout = TIMEOUT)
         #raises HTTP exception if we got an error code
         response.raise_for_status()
-    except (KeyboardInterrupt, SystemExit):
-        print('User interrupted program during GET request. Exiting')
-        exit()
-    except requests.HTTPError as e:
-        #if HTTP error is thrown we can print error message based on HTTP error code
-        print(HTTPErrorCodeMessage(response.status_code))
-        print(e)
-        exit()
+    except requests.exceptions.URLRequired:
+        print("No URL to API-Endpoint provided")
+        raise SystemExit(e)
+    except requests.exceptions.InvalidURL:
+        print("Invalid URL")
+        raise SystemExit(e)
+    except requests.exceptions.ConnectionError as e:
+        print("Failed to connect to API. Please try again later")
+        raise SystemExit(e)
+    except requests.exceptions.Timeout:
+        #sleep for one second and try again
+        print("Connection timed out after "+ TIMEOUT + " seconds. Please wait. Trying again")
+        sleep(1)
+        try:
+            response = requests.get(API_ENDPOINT, params=PARAMS, timeout = TIMEOUT)
+        except Exception as e:
+            raise SystemExit(e)
+    except requests.exceptions.HTTPError as e:
+        #check status code and give user appropriate information
+        errorMessage = HTTPErrorCodeMessage(response.status_code)
+        if(errorMessage is None):
+            #user did nothing wrong. exit with message for devs
+            raise SystemExit(e)
+        else:
+            #user did something wrong. Give appropriate Message
+            print(errorMessage)
+            exit()
+    except requests.exceptions.RequestException as e:
+        #something really bad has happened
+        raise SystemExit(e)
+
     else:
         return response.text
 
-#Python version of Switch-Case thanks to GeeksforGeeks!
+
+
+#translates HTTP Error code into appropriate Error Message
 def HTTPErrorCodeMessage(errorCode):
     switcher = {
-        400: 'Invalid GET Request Parameters',
         401: 'Access restricted. Enter the correct API key',
-        402: 'Access restricted. Check the credits balance',
+        402: 'Access restricted. The MacAddress.io account associated with this APIKey has run out of API calls.',
         422: 'Invalid MAC or OUI address was received',
-        429: 'Too many requests. Try again later',
-        500: 'Internal server error. Try again later or create issue on GitHub'
     }
-    return switcher.get(errorCode, 'Unknown Error Code')
+    #either the errorCode is one of the keys in switcher or is not. If not, return NONE
+    return switcher.get(errorCode, None)
 
 #determines if passed in string is in valid mac address format
 def isValidMacAddress(x):
@@ -82,7 +110,7 @@ def main():
                 print(retrieveNICVendor(macAddress, apiKey))
             else:
                 print("MAC address is not in valid format. Please input a MAC address without spaces as command line argument")
-    except (KeyboardInterrupt, SystemExit):
+    except (KeyboardInterrupt):
         print('User interrupted program. Exiting')
         exit()
 
