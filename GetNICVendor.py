@@ -2,6 +2,7 @@
 import requests
 import sys
 import re
+import argparse
 
 #calls mac address api to get vendor name and return it
 def retrieveNICVendor(macAddress, apiKey):
@@ -27,6 +28,16 @@ def retrieveNICVendor(macAddress, apiKey):
         response = requests.get(API_ENDPOINT, params=PARAMS, timeout = TIMEOUT)
         #raises HTTP exception if we got an error code
         response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        #check status code and give user appropriate information
+        errorMessage = HTTPErrorCodeMessage(response.status_code)
+        if(errorMessage is None):
+            #user did nothing wrong. exit with message for devs
+            raise SystemExit(e)
+        else:
+            #user did something wrong. Give appropriate Message
+            print(errorMessage)
+            exit()
     except requests.exceptions.URLRequired:
         print("No URL to API-Endpoint provided")
         raise SystemExit(e)
@@ -44,16 +55,6 @@ def retrieveNICVendor(macAddress, apiKey):
             response = requests.get(API_ENDPOINT, params=PARAMS, timeout = TIMEOUT)
         except Exception as e:
             raise SystemExit(e)
-    except requests.exceptions.HTTPError as e:
-        #check status code and give user appropriate information
-        errorMessage = HTTPErrorCodeMessage(response.status_code)
-        if(errorMessage is None):
-            #user did nothing wrong. exit with message for devs
-            raise SystemExit(e)
-        else:
-            #user did something wrong. Give appropriate Message
-            print(errorMessage)
-            exit()
     except requests.exceptions.RequestException as e:
         #something really bad has happened
         raise SystemExit(e)
@@ -81,28 +82,13 @@ def isValidMacAddress(x):
     else:
         return False
 
-#gets the command line argument only if there is one. else returns None
-def getMacAddressFromCMD():
-    #enforces exactly 2 command line arguments
-    if (len(sys.argv) == 3):
-        #captures 1st command line argument and returns
-        return sys.argv[1]
-    else:
-        return None
 
-def getApiKey():
-    #enforces exactly 2 command line arguments
-    if(len(sys.argv) == 3):
-        #captures 2nd command line argument and returns
-        return sys.argv[2]
-    else:
-        return None
 
 #main driver code
-def main():
+def main(cmdArgs):
     try:
-        macAddress = getMacAddressFromCMD()
-        apiKey = getApiKey()
+        macAddress = cmdArgs[1]
+        apiKey = cmdArgs[2]
         if((macAddress is None) or (apiKey is None)):
             print("Please input a MAC address withou spaces followed by a space followed by your macaddress.io API key")
         else:
@@ -110,10 +96,15 @@ def main():
                 print(retrieveNICVendor(macAddress, apiKey))
             else:
                 print("MAC address is not in valid format. Please input a MAC address without spaces as command line argument")
+    except IndexError as e:
+        print("Please input a mac address and APIkey as command line arguments")
+        raise e
+        print(e)
+        exit()
     except (KeyboardInterrupt):
         print('User interrupted program. Exiting')
         exit()
 
 
 if __name__ == "__main__":
-    main()
+    main(sys.argv)
