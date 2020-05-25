@@ -7,6 +7,6 @@ HOW TO USE:
 2. Run GetNICVendor.py followed by a MAC address without spaces followed by your API Key from step 1
 
 Security Concerns:
-My API key and MAC address are publically exposed in this repository and could be stored in server logs when using GET. The API key could be used to perform a DOS attack on the macaddress.io servers. Hopefully, the server has implemented some kind of spike arrest to prevent this. A MAC address is potentially sensitive as well.
+These files were scanned by Bandit. Bandit found 3 low severity issues where I use Assertions in the file containing unit tests.
 
 Built on Python 3.8.2
