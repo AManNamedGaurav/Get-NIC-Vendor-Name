@@ -6,7 +6,4 @@ HOW TO USE:
 1. Get an API Key from macaddress.io by registering for an account on the website
 2. Run GetNICVendor.py followed by a MAC address without spaces followed by your API Key from step 1
 
-Security Concerns:
-These files were scanned by Bandit. Bandit found 3 low severity issues where I use Assertions in the file containing unit tests.
-
 Built on Python 3.8.2
